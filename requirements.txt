@@ -1,0 +1,4 @@
+pandas~=2.2.3
+openpyxl~=3.1.5
+impyla~=0.17.0
+pyhive~=0.7.0
