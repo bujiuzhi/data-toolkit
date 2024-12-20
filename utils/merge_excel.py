@@ -95,18 +95,21 @@ def merge_excel_sheets(
                     continue
 
                 sheet_names = list(excel_data.keys())
-                num_sheets = len(sheet_names)
+                num_sheets_in_file = len(sheet_names)
+                sheets_to_merge = [sheet_names[idx - 1] for idx in source_sheet_indices if idx <= num_sheets_in_file]
 
-                for sheet_idx in source_sheet_indices:
-                    if sheet_idx > num_sheets:
-                        print(f"警告: 文件 {excel_file} 中没有第 {sheet_idx} 个 sheet，跳过该 Sheet。")
-                        continue
+                # 计算实际合并的 sheet 数量
+                num_sheets_to_merge = len(sheets_to_merge)
 
-                    selected_sheet_name = sheet_names[sheet_idx - 1]
+                if num_sheets_to_merge == 0:
+                    print(f"警告: 文件 {excel_file} 中没有指定的 sheet，跳过该文件。")
+                    continue
+
+                for sheet_idx, selected_sheet_name in zip(source_sheet_indices, sheets_to_merge):
                     df = excel_data[selected_sheet_name]
 
-                    # 根据 sheet 的数量决定命名规则
-                    if num_sheets == 1:
+                    # 根据要合并的 sheet 数量决定命名规则
+                    if num_sheets_to_merge == 1:
                         base_sheet_name = f"{sheet_prefix}{os.path.splitext(excel_file)[0]}"
                     else:
                         base_sheet_name = f"{sheet_prefix}{os.path.splitext(excel_file)[0]}_{selected_sheet_name}"
@@ -218,7 +221,7 @@ if __name__ == "__main__":
     file_prefix = "教学活动"  # 设置为特定前缀，如 "prefix_", 或设置为 None 自动按共同前缀分组合并
     sheet_prefix = ""  # 设置 Sheet 名称前缀
     delete_source = False  # 是否删除源文件
-    source_sheet_indices = [1, 3]  # 选择要合并的源文件中的第几个 sheet
+    source_sheet_indices = [1]  # 选择要合并的源文件中的第几个 sheet
 
     # 调用合并函数
     merge_excel_sheets(
